@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="./styles/materialdesignicons.min.css">
+  <link rel="stylesheet" href="./styles/buefy.min.css">
+</head>
+
+<body>
+  <div id="app">
+    <section class="hero is-primary">
+      <div class="hero-body">
+        <p class="title">
+          Логический анализатор БОВ
+        </p>
+        <p class="subtitle">
+          Версия: {{ version }}
+        </p>
+        <b-button type="is-warning">
+          <b-icon
+              icon="sync"
+              custom-class="fa-spin">
+          </b-icon>
+          <span>Обновить</span>
+      </b-button>
+      </div>
+    </section>
+    <section class="section is-small">
+      <div class="columns">
+        <div class="column is-6">
+          <b-tag type="is-primary" size="is-large">УПР. АНТ. ПРМ</b-tag>          
+          <div class="columns is-mobile is-multiline">
+            <div class="column is-one-quarter">              
+              <b-notification :closable="false">
+                Данные
+              </b-notification>
+            </div>
+            <div class="column is-one-quarter">
+              <b-notification :closable="false">
+                Ошибки КС
+              </b-notification>
+            </div>
+            <div class="column is-one-quarter">
+              <b-notification :closable="false">
+                Ошибки чётности
+              </b-notification>
+              
+            </div>
+            <div class="column is-one-quarter">
+              <b-notification :closable="false">
+                Длина
+              </b-notification>
+              
+            </div>
+            <div class="column is-one-quarter">
+              ПРМ1
+            </div>
+            <div class="column is-one-quarter">
+              0
+            </div>
+            <div class="column is-one-quarter">
+              0
+            </div>
+            <div class="column is-one-quarter">
+              0
+            </div>
+            <div class="column is-one-quarter">
+              ПРМ2
+            </div>
+            <div class="column is-one-quarter">
+              0
+            </div>
+            <div class="column is-one-quarter">
+              0
+            </div>
+            <div class="column is-one-quarter">
+              0
+            </div>
+            <div class="column is-one-quarter">
+              ПРМ3
+            </div>
+            <div class="column is-one-quarter">
+              0
+            </div>
+            <div class="column is-one-quarter">
+              0
+            </div>
+            <div class="column is-one-quarter">
+              0
+            </div>
+          </div>
+        </div> 
+        <div class="column is-3">
+          <b-tag type="is-primary" size="is-large">УПР. ПРМ</b-tag>       
+          <div class="columns is-mobile is-multiline">
+            <div class="column is-half">
+              <b-notification :closable="false">
+                Данные
+              </b-notification>
+            </div>
+            <div class="column is-half"></div>
+            <div class="column">
+              ПРМ
+            </div>
+          </div>
+        </div> 
+      </div>
+      <div class="columns">
+        <div class="column is-3">
+          <b-tag type="is-primary" size="is-large">УПР. АНТ. ПРД</b-tag>       
+          <div class="columns is-mobile is-multiline">
+            <div class="column is-half">
+              <b-notification :closable="false">
+                Данные
+              </b-notification>
+            </div>
+            <div class="column">
+              <b-notification :closable="false">
+                Ошибки КС
+              </b-notification>
+            </div>
+            <div class="column is-half">
+              ПРД1
+            </div>
+            <div class="column">
+              0
+            </div>
+            <div class="column is-half">
+              ПРД2
+            </div>
+            <div class="column">
+              0
+            </div>
+          </div>
+        </div>        
+        <div class="column is-3">
+          <b-tag type="is-primary" size="is-large">УПР. ГШ и НРЗ</b-tag>       
+          <div class="columns is-mobile is-multiline">
+            <div class="column is-half">
+              <b-notification :closable="false">
+                Данные
+              </b-notification>
+            </div>
+            <div class="column">
+              <b-notification :closable="false">
+                Ошибки КС
+              </b-notification>
+            </div>
+            <div class="column is-half">
+              ГШ
+            </div>
+            <div class="column">
+              0
+            </div>
+            <div class="column is-half">
+              НРЗ
+            </div>
+            <div class="column">
+              0
+            </div>
+          </div>
+        </div>
+        <div class="column">
+          <b-button type="is-warning">
+            <b-icon
+                icon="delete"
+                custom-class="fa-spin">
+            </b-icon>
+            <span>Сброс счетчиков ошибок</span>
+          </b-button>
+        </div>
+      </div>
+
+
+    </section>
+
+  </div>
+
+  <script src="./modules/vue.js"></script>
+  <script src="./modules/buefy.min.js"></script>
+  <script src="./main.js"></script>
+
+</body>
+
+</html>
