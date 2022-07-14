@@ -22,12 +22,16 @@ var app = new Vue({
   },
   methods: {
     refreshBOV(){
+
       let jsoncmd = { 
         jsonrpc: "2.0", 
         method : "get", 
         id: 1 
       };
-
+      console.log(JSON.stringify(jsoncmd));
+      if(this.ws){
+        this.ws.send(JSON.stringify(jsoncmd));
+      }
     },
     connect() {
 
