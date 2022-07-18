@@ -4,15 +4,15 @@ var JSONRPC_TIMEOUT_MS = 1000;
 var app = new Vue({
   el: '#app',
   data: {
-    version: '0.0.0.0',
     ws: null,
-    endpoint: 'ws://127.0.0.1:64999',
+    endpoint: 'ws://localhost/websocket.lua',
     isConnected: false,
     isDisabled: false,
     stateMessage: "Подключение к серверу через вебсокет",
     typeMsg: "",
     hasError: false,
-    pending: {}
+    pending: {},
+    state: {}
   },
   watch: {
     isConnected: function (val) {
@@ -22,6 +22,41 @@ var app = new Vue({
       else {
         this.disconnect();
       };
+    }
+  },
+  computed: {
+    statePRM: function () {
+      if(this.state.result != undefined){
+        let type = this.state.result.states > 0 ? "is-success" : "is_danger";
+        console.log(type);
+        return type;
+      }
+      return "";
+    },
+    version: function () {
+      if(this.state.result != undefined){
+        return  this.state.result.sf;
+      }
+      return "0.0.0.0";
+    },
+    prms : function() {
+      
+      if(this.state.result != undefined){
+        return this.state.result.prm;
+      }
+      return [[0,0,0], [0,0,0], [0,0,0]];
+    },
+    prd: function(){
+      if(this.state.result != undefined){
+        return this.state.result.prd;
+      }
+      return [0,0];
+    },
+    others: function() {
+      if(this.state.result != undefined){
+        return [this.state.result.gh, this.state.result.nrz];
+      }
+      return [0,0];
     }
   },
   methods: {
@@ -134,21 +169,17 @@ var app = new Vue({
       }
     },
     onmessagews(msg) {
-      console.log("Receive message: " + msg);
-      const reader = new FileReader();
-      let self = this;
-      reader.addEventListener('loadend', function () {
-        const frame = JSON.parse(reader.result);
-        console.log(frame);
-        if (frame.id !== undefined) {
-          if (self.pending[frame.id] !== undefined) self.pending[frame.id](frame);  // Resolve
-          delete (self.pending[frame.id]);
-        } else {
-          self.notification(frame);
-        }
+      const frame = JSON.parse(msg.data);
+      console.log("Receive message: " + frame);
 
-      });
-      reader.readAsText(msg.data);
+      if (frame.id !== undefined) {
+        if (this.pending[frame.id] !== undefined) this.pending[frame.id](frame);  // Resolve
+        delete (this.pending[frame.id]);
+        console.log(frame);
+        this.state = frame;
+      } else {
+        this.notification(frame);
+      }
     }
 
   }

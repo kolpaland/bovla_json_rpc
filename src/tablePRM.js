@@ -1,12 +1,23 @@
 Vue.component('table-prm', {
     data: function () {
-        return {
-            data: [
-                { 'id': 1, 'name': 'ПРМ1', 'err_checksum': 0, 'err_parity': 0, 'len': 0 },
-                { 'id': 2, 'name': 'ПРМ2', 'err_checksum': 0, 'err_parity': 0, 'len': 0 },
-                { 'id': 3, 'name': 'ПРМ3', 'err_checksum': 0, 'err_parity': 0, 'len': 0 }
-            ]
-           
+        return { 
+        
+        }
+    },
+    props: {
+        prms: {
+            type: Array,
+            default: function() {
+                return [[0,0,0],[0,0,0],[0,0,0]];
+              }
+        }
+    },
+    computed: {
+        data: function() { return [
+            { 'id': 1, 'name': 'ПРМ1', 'err_checksum': this.prms[0][0], 'err_parity': this.prms[0][1], 'len': this.prms[0][2] },
+            { 'id': 2, 'name': 'ПРМ2', 'err_checksum': this.prms[1][0], 'err_parity': this.prms[1][1], 'len': this.prms[1][2] },
+            { 'id': 3, 'name': 'ПРМ3', 'err_checksum': this.prms[2][0], 'err_parity': this.prms[2][1], 'len': this.prms[2][2] }
+        ]
         }
     },
     template:

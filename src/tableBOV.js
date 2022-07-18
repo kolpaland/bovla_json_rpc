@@ -2,15 +2,23 @@ Vue.component('table-bov', {
     data: function () {
         return {
             
-            data: [
-                { 'id': 1, 'name': this.names[0], 'err_checksum': 0 },
-                { 'id': 2, 'name': this.names[1], 'err_checksum': 0 } 
-            ],
-
         }
     },
     props: {
-        names: Array
+        names: Array,
+        errors: {
+            type: Array,
+            default: function() {
+                return [0,0];
+              }
+        }
+    },
+    computed:{
+        data: function() { return [
+            { 'id': 1, 'name': this.names[0], 'err_checksum': this.errors[0] },
+            { 'id': 2, 'name': this.names[1], 'err_checksum': this.errors[1] } 
+        ]
+        }
     },
       template: 
       `<b-table class="py-2 px-2" :data="data" style="width: 390px;">
