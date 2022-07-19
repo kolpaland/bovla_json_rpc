@@ -8,7 +8,7 @@ Vue.component('table-prm', {
         prms: {
             type: Array,
             default: function() {
-                return [[0,0,0],[0,0,0],[0,0,0]];
+                return [[-1,-1,-1],[-1,-1,-1],[-1,-1,-1]];
               }
         }
     },
@@ -34,6 +34,9 @@ Vue.component('table-prm', {
     methods: {
         hasErrors(data){
             return data.err_checksum > 0 || data.err_parity > 0;
+        },
+        noErrors(data){
+            return data.err_checksum === 0 || data.err_parity === 0;
         }
     },
     template:
@@ -42,7 +45,7 @@ Vue.component('table-prm', {
                 <span :class="[ 
                     'tag', 
                     { 'is-danger': hasErrors(props.row)},  
-                    { 'is-success': !hasErrors(props.row)}, 
+                    { 'is-success': noErrors(props.row)}, 
                     'is-medium'
                 ]" style="width: 80px;">
                     {{ props.row.name }}
@@ -54,10 +57,12 @@ Vue.component('table-prm', {
                     { 'is-danger': props.row.err_checksum > 0},  
                     { 'is-success': props.row.err_checksum === 0},
                     'is-light', 
-                    'is-medium'
+                    'is-medium',
+                    {'is-hidden': props.row.err_checksum < 0}
                 ]">
                     {{ props.row.err_checksum }}
                 </span>
+                <b-skeleton :active="props.row.err_checksum < 0" :animated="true"></b-skeleton>
             </b-table-column>
             <b-table-column field="err_parity" label="Ошибки четности" numeric centered  v-slot="props">
                 <span :class="[ 
@@ -65,15 +70,21 @@ Vue.component('table-prm', {
                     { 'is-danger': props.row.err_parity > 0 },
                     { 'is-success': props.row.err_parity === 0}, 
                     'is-light', 
-                    'is-medium'
+                    'is-medium',
+                    {'is-hidden': props.row.err_parity < 0}
                 ]">
                     {{ props.row.err_parity }}
                 </span>
+                <b-skeleton :active="props.row.err_parity < 0" :animated="true"></b-skeleton>
             </b-table-column>
             <b-table-column field="len" label="Длина" numeric centered v-slot="props">
-                <span class="tag is-success is-light is-medium">
+                <span :class="[
+                    'tag', 'is-success', 'is-light', 'is-medium',
+                    {'is-hidden': props.row.err_parity < 0}
+                ]">
                     {{ props.row.len }}
                 </span>
+                <b-skeleton :active="props.row.len < 0" :animated="true"></b-skeleton>
             </b-table-column>
       </b-table>`
 })

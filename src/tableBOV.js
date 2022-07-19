@@ -9,7 +9,7 @@ Vue.component('table-bov', {
         errors: {
             type: Array,
             default: function() {
-                return [0,0];
+                return [-1,-1];
               }
         }
     },
@@ -39,10 +39,12 @@ Vue.component('table-bov', {
                 { 'is-danger': props.row.err_checksum > 0},
                 { 'is-success': props.row.err_checksum === 0},  
                 'is-light', 
-                'is-medium'
+                'is-medium',
+                {'is-hidden': props.row.err_checksum < 0}
             ]">
                 {{ props.row.err_checksum }}
             </span>
+            <b-skeleton :active="props.row.err_checksum < 0" :animated="true"></b-skeleton>
         </b-table-column>
       </b-table>`
     })
