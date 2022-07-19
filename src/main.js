@@ -6,6 +6,7 @@ var app = new Vue({
   data: {
     ws: null,
     endpoint: 'ws://localhost/websocket.lua',
+    timerId: null,
     isConnected: false,
     isDisabled: false,
     stateMessage: "Подключение к серверу через вебсокет",
@@ -28,7 +29,6 @@ var app = new Vue({
     statePRM: function () {
       if(this.state.result != undefined){
         let type = this.state.result.states > 0 ? "is-success" : "is_danger";
-        console.log(type);
         return type;
       }
       return "";
@@ -59,23 +59,27 @@ var app = new Vue({
       return [0,0];
     }
   },
+  mounted() {
+    this.$nextTick(function () {
+      this.isConnected = true;
+    });
+  },
   methods: {
     sendCmdToBov(method) { //with no response like notification, so id is null
 
       let jsoncmd = {
         jsonrpc: "2.0",
         method: method,
-        id: null
+        id: undefined //we should use undefined instead null, in lua null is interpretered as a function, not a nil value
       };
-      console.log(JSON.stringify(jsoncmd));
       this.send(jsoncmd);
     },
     async sendRequest(id, method) {
-
-      return this.call(id, method)
-        .then(function (res) {
-          console.log(JSON.stringify(res));
-        });
+      return this.call(id, method);
+      // return this.call(id, method)
+      //   .then(function (res) {
+      //     console.log(JSON.stringify(res));
+      //   });
     },
     call(id, method) {
       if (!this.ws) {
@@ -110,11 +114,15 @@ var app = new Vue({
       console.log("Starting connection to WebSocket Server");
       this.isDisabled = true;
       this.pending = {};
-      this.ws = new WebSocket(this.endpoint, [
+      this.ws = new WebSocket(this.endpoint);
+
+      //for nanomsg use this one
+      //this.ws = new WebSocket(this.endpoint, [
         // see the rfc on sp websocket mapping:
         // raw.githubusercontent.com/nanomsg/nanomsg/master/rfc/sp-websocket-mapping-01.txt
-        'pair.sp.nanomsg.org'
-      ]);
+       // 'pair.sp.nanomsg.org'
+      //]);
+
       if (!this.ws) {
         console.log("Cannot to connect");
         this.isConnected = false;
@@ -142,40 +150,46 @@ var app = new Vue({
     },
     onopenws(event) {
       console.log("Connection is established!")
-      hasError = false;
+      this.hasError = false;
       this.stateMessage = "Подключение установлено!";
       this.typeMsg = "is-success";
       this.isDisabled = false;
+      this.timerId = setInterval(this.sendRequest, 500, 1, 'get')  
     },
     onerrorws(event) {
-
+      if(this.timerId){
+        clearInterval(this.timerId);
+      }
+      this.timerId = null;
       this.stateMessage = "Невозможно подключиться к серверу " + event.target.url;
       this.typeMsg = "is-danger";
       this.isDisabled = false;
-      hasError = true;
+      this.hasError = true;
       console.log("Can’t establish a connection to the server at " + event.target.url + "!");
+
     },
     onclosews(event) {
 
       console.log("The connection between the client and the server is closed");
-
+      if(this.timerId){
+        clearInterval(this.timerId);
+      }
+      this.timerId = null;
       this.isDisabled = false;
       this.isConnected = false;
       this.ws = null;
-      if (!hasError) {
+      if (!this.hasError) {
         this.stateMessage = "Подключение к серверу через вебсокет";
         this.typeMsg = "";
-        hasError = false;
+        this.hasError = false;
       }
     },
     onmessagews(msg) {
       const frame = JSON.parse(msg.data);
-      console.log("Receive message: " + frame);
 
       if (frame.id !== undefined) {
         if (this.pending[frame.id] !== undefined) this.pending[frame.id](frame);  // Resolve
         delete (this.pending[frame.id]);
-        console.log(frame);
         this.state = frame;
       } else {
         this.notification(frame);
