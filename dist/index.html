@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="./styles/materialdesignicons.min.css">
+  <link rel="stylesheet" href="./styles/buefy.min.css">
+</head>
+
+<body>
+  <div id="app">
+
+    <b-navbar>
+      
+      <template #start>
+        <b-navbar-item tag="div">
+          <b-field grouped :type="typeMsg">
+            <b-input v-model="endpoint" placeholder="Введите адрес..." icon-right="." :disabled="isDisabled">
+            </b-input>
+            <b-switch v-model="isConnected" :type="typeMsg" :disabled="isDisabled">
+              {{ isConnected ? (isDisabled? "Подключение..." : "Отключить") : "Подключиться"}}
+            </b-switch>
+          </b-field>
+        </b-navbar-item>
+      </template>
+
+      <template #end>
+        <b-navbar-item tag="div">
+          <div class="buttons">
+            <b-button type="is-warning" @click="sendRequest(1, 'get')">
+              <b-icon icon="sync">
+              </b-icon>
+              <span>Обновить</span>
+            </b-button>
+            <b-button type="is-warning" @click="sendCmdToBov('clear')">
+              <b-icon icon="delete">
+              </b-icon>
+              <span>Сброс счетчиков ошибок</span>
+            </b-button>
+          </div>
+        </b-navbar-item>
+      </template>
+    </b-navbar>   
+    <section class="hero is-primary is-small">
+      <div class="hero-body">
+        <p class="title">
+          Логический анализатор БОВ
+        </p>
+        <p class="subtitle">
+          Версия: {{ version }}
+        </p>
+      </div>
+    </section>
+
+    <section class="section is-small has-background-success-light">
+      <div class="container block">
+        <b-taglist attached>
+          <b-tag type="is-primary" size="is-large">УПР. ПРМ</b-tag>
+          <b-tag type="is-success" size="is-large">ПРМ</b-tag>
+        </b-taglist>
+      </div>
+      <div class="container block">
+            <b-tag type="is-primary" size="is-large">УПР. АНТ. ПРМ</b-tag>
+            <table-prm></table-prm>
+      </div>
+      
+      <div class="container">
+        <div class="columns">        
+          <div class="column is-narrow">
+            <b-tag type="is-primary" size="is-large">УПР. АНТ. ПРД</b-tag>
+            <table-bov v-bind:names="['ПРД1', 'ПРД2']"></table-bov>
+          </div>
+          <div class="column is-narrow">
+            <b-tag type="is-primary" size="is-large">УПР. ГШ и НРЗ</b-tag>
+            <table-bov v-bind:names="['ГШ', 'НРЗ']"></table-bov>
+          </div>        
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="./modules/vue.js"></script>
+  <script src="./modules/buefy.min.js"></script>
+  <script src="./src/tableBOV.js"></script>
+  <script src="./src/tablePRM.js"></script>
+  <script src="./src/main.js"></script>
+
+</body>
+
+</html>

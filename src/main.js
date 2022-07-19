@@ -27,12 +27,16 @@ var app = new Vue({
     }
   },
   computed: {
-    statePRM: function () {
+    prmdata: function(){
+      return [
+        { 'id': 1, 'name': 'ПРМ'}
+      ]
+    },
+    hasPRMStates: function () {
       if(this.state.result != undefined){
-        let type = this.state.result.states > 0 ? "is-success" : "is_danger";
-        return type;
+        return this.state.result.states > 0 ;
       }
-      return "is-warning";
+      return false;
     },
     version: function () {
       if(this.state.result != undefined){
@@ -62,6 +66,12 @@ var app = new Vue({
     });
   },
   methods: {
+    swupdate(){ 
+        let url=window.location.href;        
+        let arr=url.split("/");        
+        let address=arr[2].split(":");        
+        window.location.href=arr[0]+"//"+address[0]+":8080"      
+    },
     warning() {
       let self = this;
       this.$buefy.snackbar.open({

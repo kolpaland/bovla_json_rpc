@@ -21,7 +21,7 @@ Vue.component('table-bov', {
         }
     },
       template: 
-      `<b-table class="py-2 px-2" :data="data" style="width: 378px;">
+      `<b-table class="py-2 px-2" :data="data" style="width: 305px;">
         <b-table-column field="name" label="Данные" v-slot="props">
             <span :class="[ 
                 'tag', 
