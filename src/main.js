@@ -13,7 +13,8 @@ var app = new Vue({
     typeMsg: "",
     hasError: false,
     pending: {},
-    state: {}
+    state: {},
+    isLoading: false
   },
   watch: {
     isConnected: function (val) {
@@ -31,7 +32,7 @@ var app = new Vue({
         let type = this.state.result.states > 0 ? "is-success" : "is_danger";
         return type;
       }
-      return "";
+      return "is-warning";
     },
     version: function () {
       if(this.state.result != undefined){
@@ -39,24 +40,20 @@ var app = new Vue({
       }
       return "0.0.0.0";
     },
-    prms : function() {
-      
+    prms : function() {      
       if(this.state.result != undefined){
         return this.state.result.prm;
       }
-      return [[0,0,0], [0,0,0], [0,0,0]];
     },
     prd: function(){
       if(this.state.result != undefined){
         return this.state.result.prd;
       }
-      return [0,0];
     },
     others: function() {
       if(this.state.result != undefined){
         return [this.state.result.gh, this.state.result.nrz];
       }
-      return [0,0];
     }
   },
   mounted() {
@@ -65,6 +62,19 @@ var app = new Vue({
     });
   },
   methods: {
+    warning() {
+      let self = this;
+      this.$buefy.snackbar.open({
+          message: self.stateMessage,
+          type: 'is-warning',
+          position: 'is-top',
+          actionText: 'OK',
+          indefinite: true,
+          onAction: function() {
+            self.connect();
+          }
+      })
+    },
     sendCmdToBov(method) { //with no response like notification, so id is null
 
       let jsoncmd = {
@@ -111,6 +121,7 @@ var app = new Vue({
         console.log("Connection has been established before");
         return;
       }
+      this.isLoading=true;
       console.log("Starting connection to WebSocket Server");
       this.isDisabled = true;
       this.pending = {};
@@ -155,6 +166,7 @@ var app = new Vue({
       this.typeMsg = "is-success";
       this.isDisabled = false;
       this.timerId = setInterval(this.sendRequest, 500, 1, 'get')  
+      this.isLoading=false;
     },
     onerrorws(event) {
       if(this.timerId){
@@ -166,6 +178,8 @@ var app = new Vue({
       this.isDisabled = false;
       this.hasError = true;
       console.log("Can’t establish a connection to the server at " + event.target.url + "!");
+      this.isLoading=false;
+      this.warning();
 
     },
     onclosews(event) {
@@ -179,9 +193,11 @@ var app = new Vue({
       this.isConnected = false;
       this.ws = null;
       if (!this.hasError) {
-        this.stateMessage = "Подключение к серверу через вебсокет";
+        this.stateMessage = "Соединение с сервером прервано, повторное подключение";
         this.typeMsg = "";
         this.hasError = false;
+        this.isLoading=true;
+        this.warning();
       }
     },
     onmessagews(msg) {

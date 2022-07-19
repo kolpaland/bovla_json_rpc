@@ -53,32 +53,42 @@
       </div>
     </section>
 
-    <section class="section is-small has-background-success-light">
-        <div class="container block">
-          <b-taglist attached>
-            <b-tag type="is-primary" size="is-large">УПР. ПРМ</b-tag>
-            <b-tag :type="statePRM" size="is-large">ПРМ</b-tag>
-          </b-taglist>
-        </div>
-        <div class="container block">
-          <b-tag type="is-primary" size="is-large">УПР. АНТ. ПРМ</b-tag>
-          <table-prm v-bind:prms="prms"></table-prm>
-        </div>
+    <section class="section is-small has-background-primary-light">
+      <div class="container">
+        <nav class="level">
 
-        <div class="container">
-          <div class="columns">
-            <div class="column is-narrow">
-              <b-tag type="is-primary" size="is-large">УПР. АНТ. ПРД</b-tag>
-              <table-bov v-bind:names="['ПРД1', 'ПРД2']" v-bind:errors="prd"></table-bov>
+          <p class="level-item has-text-centered">
+          <div class="container">
+            <b-loading :is-full-page="true" v-model="isLoading" :can-cancel="false"></b-loading>
+            <div class="container block">
+              <b-taglist attached>
+                <b-tag type="is-primary" size="is-large">УПР. ПРМ</b-tag>
+                <b-tag :type="statePRM" size="is-large">ПРМ</b-tag>
+              </b-taglist>
             </div>
-            <div class="column is-narrow">
-              <b-tag type="is-primary" size="is-large">УПР. ГШ и НРЗ</b-tag>
-              <table-bov v-bind:names="['ГШ', 'НРЗ']" v-bind:errors="others"></table-bov>
+            <div class="container block">
+              <b-tag type="is-primary" size="is-large">УПР. АНТ. ПРМ</b-tag>
+              <table-prm v-bind:prms="prms"></table-prm>
             </div>
-        </div>
+
+            <div class="container">
+              <div class="columns">
+                <div class="column is-narrow">
+                  <b-tag type="is-primary" size="is-large">УПР. АНТ. ПРД</b-tag>
+                  <table-bov v-bind:names="['ПРД1', 'ПРД2']" v-bind:errors="prd"></table-bov>
+                </div>
+                <div class="column is-narrow">
+                  <b-tag type="is-primary" size="is-large">УПР. ГШ и НРЗ</b-tag>
+                  <table-bov v-bind:names="['ГШ', 'НРЗ']" v-bind:errors="others"></table-bov>
+                </div>
+              </div>
+            </div>
+          </div>
+          </p>
+
+        </nav>
       </div>
     </section>
-
   </div>
 
   <script src="./modules/vue.js"></script>
