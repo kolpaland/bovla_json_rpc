@@ -10,16 +10,9 @@
 
 <body>
   <div id="app">
-    <b-field class="is-hidden" grouped :type="typeMsg">
-      <b-input v-model="endpoint" placeholder="Введите адрес..." icon-right="." :disabled="isDisabled">
-      </b-input>
-      <b-switch v-model="isConnected" :type="typeMsg" :disabled="isDisabled">
-        {{ isConnected ? (isDisabled? "Подключение..." : "Отключить") : "Подключиться"}}
-      </b-switch>
-    </b-field>
     
     <section class="hero is-primary is-small">
-      <div class="hero-body">
+      <div class="hero-body">            
         <p class="title">
           Логический анализатор БОВ
         </p>
@@ -31,7 +24,7 @@
             <p class="level-item">
               <b-button  class="level-item" type="is-warning" @click="swupdate()">
                 <b-icon icon="sync"></b-icon>
-                <span>Обновить</span>
+                <span>Обновить ПО</span>
               </b-button>
             </p>
           </div>
@@ -45,7 +38,9 @@
 
           <p class="level-item has-text-centered">
           <div class="container">
-            <b-loading :is-full-page="true" v-model="isLoading" :can-cancel="false"></b-loading>
+            <div class="container">              
+              <b-loading :is-full-page="true" v-model="isLoading" :can-cancel="false"></b-loading>
+            </div>
 
             <div class="container block">
               <nav class="level" style="width: 780px;">
