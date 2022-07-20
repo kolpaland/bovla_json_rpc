@@ -10,46 +10,32 @@
 
 <body>
   <div id="app">
-
-    <b-navbar>
-
-      <template #start>
-        <b-navbar-item tag="div">
-          <b-field class="is-invisible" grouped :type="typeMsg">
-            <b-input v-model="endpoint" placeholder="Введите адрес..." icon-right="." :disabled="isDisabled">
-            </b-input>
-            <b-switch v-model="isConnected" :type="typeMsg" :disabled="isDisabled">
-              {{ isConnected ? (isDisabled? "Подключение..." : "Отключить") : "Подключиться"}}
-            </b-switch>
-          </b-field>
-        </b-navbar-item>
-      </template>
-
-      <template #end>
-        <b-navbar-item tag="div">
-          <div class="buttons">
-            <b-button class="is-invisible" type="is-warning" @click="sendRequest(1, 'get')">
-              <b-icon icon="sync">
-              </b-icon>
-              <span>Обновить</span>
-            </b-button>
-            <b-button type="is-warning" @click="sendCmdToBov('clear')">
-              <b-icon icon="delete">
-              </b-icon>
-              <span>Сброс счетчиков ошибок</span>
-            </b-button>
-          </div>
-        </b-navbar-item>
-      </template>
-    </b-navbar>
+    <b-field class="is-hidden" grouped :type="typeMsg">
+      <b-input v-model="endpoint" placeholder="Введите адрес..." icon-right="." :disabled="isDisabled">
+      </b-input>
+      <b-switch v-model="isConnected" :type="typeMsg" :disabled="isDisabled">
+        {{ isConnected ? (isDisabled? "Подключение..." : "Отключить") : "Подключиться"}}
+      </b-switch>
+    </b-field>
+    
     <section class="hero is-primary is-small">
       <div class="hero-body">
         <p class="title">
           Логический анализатор БОВ
         </p>
-        <p class="subtitle">
-          Версия: {{ version }}
-        </p>
+        <nav class="level"> 
+          <div class="level-left">
+            <p class="level-left is-size-4" style="width: 222px;">
+              Версия: {{ version }}
+            </p>
+            <p class="level-item">
+              <b-button  class="level-item" type="is-warning" @click="swupdate()">
+                <b-icon icon="sync"></b-icon>
+                <span>Обновить</span>
+              </b-button>
+            </p>
+          </div>
+        </nav>        
       </div>
     </section>
 
@@ -60,26 +46,45 @@
           <p class="level-item has-text-centered">
           <div class="container">
             <b-loading :is-full-page="true" v-model="isLoading" :can-cancel="false"></b-loading>
+
             <div class="container block">
-              <b-taglist attached>
-                <b-tag type="is-primary" size="is-large">УПР. ПРМ</b-tag>
-                <b-tag :type="statePRM" size="is-large">ПРМ</b-tag>
-              </b-taglist>
-            </div>
-            <div class="container block">
-              <b-tag type="is-primary" size="is-large">УПР. АНТ. ПРМ</b-tag>
-              <table-prm v-bind:prms="prms"></table-prm>
+              <nav class="level" style="width: 780px;">
+                <b-tag type="is-primary" size="is-large">УПР. АНТ. ПРМ</b-tag>
+                <b-button type="is-warning" @click="sendCmdToBov('clear')">
+                  <b-icon icon="delete">
+                  </b-icon>
+                  <span>Сброс счетчиков ошибок</span>
+                </b-button>
+              </nav>
+                            
+              <table-prm v-bind:prms="prms" v-bind:states="statesprm"></table-prm>
             </div>
 
             <div class="container">
               <div class="columns">
                 <div class="column is-narrow">
                   <b-tag type="is-primary" size="is-large">УПР. АНТ. ПРД</b-tag>
-                  <table-bov v-bind:names="['ПРД1', 'ПРД2']" v-bind:errors="prd"></table-bov>
+                  <table-bov v-bind:names="['ПРД1', 'ПРД2']" v-bind:errors="prd" v-bind:states="statesprd"></table-bov>
                 </div>
                 <div class="column is-narrow">
                   <b-tag type="is-primary" size="is-large">УПР. ГШ и НРЗ</b-tag>
-                  <table-bov v-bind:names="['ГШ', 'НРЗ']" v-bind:errors="others"></table-bov>
+                  <table-bov v-bind:names="['ГШ', 'НРЗ']" v-bind:errors="others" v-bind:states="statesOthers"></table-bov>
+                </div>
+                <div class="column is-narrow">
+                  <b-tag type="is-primary" size="is-large">УПР. ПРМ</b-tag>
+                  <b-table class="py-2 px-2" :data="prmdata">
+                    <b-table-column label="Данные" centered v-slot="props">
+                      <span :class="[ 
+                          'tag', 
+                          { 'is-danger': !hasPRMData },
+                          { 'is-success': hasPRMData }, 
+                          'is-medium'
+                        ]" 
+                        style="width: 80px;">
+                        {{props.row.name}}
+                      </span>
+                    </b-table-column>
+                  </b-table>
                 </div>
               </div>
             </div>

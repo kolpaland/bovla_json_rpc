@@ -10,6 +10,12 @@ Vue.component('table-prm', {
             default: function() {
                 return [[-1,-1,-1],[-1,-1,-1],[-1,-1,-1]];
               }
+        },
+        states:{
+            type: Array,
+            default: function() {
+                return [false, false, false];
+              }
         }
     },
     computed: {
@@ -21,6 +27,7 @@ Vue.component('table-prm', {
                 let obj = {};
                 obj.id = i;
                 obj.name = "ПРМ" + i;
+                obj.state = this.states[i]
                 obj.err_checksum = Math.round(this.prms[i][0]);
                 obj.err_parity = Math.round(this.prms[i][1]);
                 obj.len = Math.round(this.prms[i][2]);
@@ -32,11 +39,8 @@ Vue.component('table-prm', {
 
     },
     methods: {
-        hasErrors(data){
-            return data.err_checksum > 0 || data.err_parity > 0;
-        },
-        noErrors(data){
-            return data.err_checksum === 0 || data.err_parity === 0;
+        hasData(data){
+            return data.state;
         }
     },
     template:
@@ -44,8 +48,8 @@ Vue.component('table-prm', {
             <b-table-column field="name" label="Данные" v-slot="props">
                 <span :class="[ 
                     'tag', 
-                    { 'is-danger': hasErrors(props.row)},  
-                    { 'is-success': noErrors(props.row)}, 
+                    { 'is-danger': !hasData(props.row)},  
+                    { 'is-success': hasData(props.row)}, 
                     'is-medium'
                 ]" style="width: 80px;">
                     {{ props.row.name }}

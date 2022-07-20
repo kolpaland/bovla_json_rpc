@@ -1,5 +1,14 @@
 // JSON-RPC over Websocket implementation
 var JSONRPC_TIMEOUT_MS = 1000;
+const STATES_HAS_DATA_VALUE = "0";
+const BIT_NO_DATA_PRD1 = 7; 
+const BIT_NO_DATA_PRD2 = 6;
+const BIT_NO_DATA_PRM1 = 5; 
+const BIT_NO_DATA_PRM2 = 4;
+const BIT_NO_DATA_PRM3 = 3;
+const BIT_NO_DATA_GH = 2;
+const BIT_NO_DATA_NRZ = 1;
+const BIT_NO_DATA_UPR_PRM = 0;
 
 var app = new Vue({
   el: '#app',
@@ -32,9 +41,9 @@ var app = new Vue({
         { 'id': 1, 'name': 'ПРМ'}
       ]
     },
-    hasPRMStates: function () {
-      if(this.state.result != undefined){
-        return this.state.result.states > 0 ;
+    hasPRMData: function () {
+      if(this.state.result != undefined){        
+        return this.state.result.states.toString(2)[BIT_NO_DATA_UPR_PRM] === STATES_HAS_DATA_VALUE ;
       }
       return false;
     },
@@ -49,16 +58,43 @@ var app = new Vue({
         return this.state.result.prm;
       }
     },
+    statesprm: function(){
+      if(this.state.result != undefined){   
+        let statesBits = this.state.result.states.toString(2);    
+        return [ statesBits[BIT_NO_DATA_PRM1] === STATES_HAS_DATA_VALUE,
+          statesBits[BIT_NO_DATA_PRM2] === STATES_HAS_DATA_VALUE,
+          statesBits[BIT_NO_DATA_PRM3] === STATES_HAS_DATA_VALUE
+        ];
+      }
+    },
     prd: function(){
       if(this.state.result != undefined){
         return this.state.result.prd;
+      }
+    },
+    statesprd: function(){
+      if(this.state.result != undefined){   
+        let statesBits = this.state.result.states.toString(2);    
+        return [ 
+          statesBits[BIT_NO_DATA_PRD1] === STATES_HAS_DATA_VALUE,
+          statesBits[BIT_NO_DATA_PRD2] === STATES_HAS_DATA_VALUE
+        ];
       }
     },
     others: function() {
       if(this.state.result != undefined){
         return [this.state.result.gh, this.state.result.nrz];
       }
-    }
+    },
+    statesOthers: function(){
+      if(this.state.result != undefined){   
+        let statesBits = this.state.result.states.toString(2);    
+        return [ 
+          statesBits[BIT_NO_DATA_GH] === STATES_HAS_DATA_VALUE,
+          statesBits[BIT_NO_DATA_NRZ] === STATES_HAS_DATA_VALUE
+        ];
+      }
+    },
   },
   mounted() {
     this.$nextTick(function () {
@@ -189,6 +225,7 @@ var app = new Vue({
       this.hasError = true;
       console.log("Can’t establish a connection to the server at " + event.target.url + "!");
       this.isLoading=false;
+      this.state = {};
       this.warning();
 
     },

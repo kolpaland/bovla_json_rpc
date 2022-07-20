@@ -11,12 +11,18 @@ Vue.component('table-bov', {
             default: function() {
                 return [-1,-1];
               }
+        },
+        states: {
+            type: Array,
+            default: function() {
+                return [false, false];
+          }
         }
     },
     computed:{
         data: function() { return [
-            { 'id': 1, 'name': this.names[0], 'err_checksum': Math.round(this.errors[0]) },
-            { 'id': 2, 'name': this.names[1], 'err_checksum': Math.round(this.errors[1]) } 
+            { 'id': 1, 'name': this.names[0], state: this.states[0], 'err_checksum': Math.round(this.errors[0]) },
+            { 'id': 2, 'name': this.names[1], state: this.states[1], 'err_checksum': Math.round(this.errors[1]) } 
         ]
         }
     },
@@ -25,8 +31,8 @@ Vue.component('table-bov', {
         <b-table-column field="name" label="Данные" v-slot="props">
             <span :class="[ 
                 'tag', 
-                { 'is-danger': props.row.err_checksum > 0},
-                { 'is-success': props.row.err_checksum === 0}, 
+                { 'is-danger': !props.row.state },
+                { 'is-success': props.row.state }, 
                 'is-medium'
             ]"
              style="width: 80px;">
