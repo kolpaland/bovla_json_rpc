@@ -14,26 +14,11 @@ var app = new Vue({
   el: '#app',
   data: {
     ws: null,
-    endpoint: 'ws://localhost/websocket.lua',
-    timerId: null,
-    isConnected: false,
-    isDisabled: false,
-    stateMessage: "Подключение к серверу через вебсокет",
-    typeMsg: "",
-    hasError: false,
+    endpoint: 'ws://bovla/websocket.lua',
+    timerRequestId: null,
     pending: {},
     state: {},
     isLoading: false
-  },
-  watch: {
-    isConnected: function (val) {
-      if (val) {
-        this.connect();
-      }
-      else {
-        this.disconnect();
-      };
-    }
   },
   computed: {
     prmdata: function(){
@@ -61,7 +46,8 @@ var app = new Vue({
     statesprm: function(){
       if(this.state.result != undefined){   
         let statesBits = this.state.result.states.toString(2);    
-        return [ statesBits[BIT_NO_DATA_PRM1] === STATES_HAS_DATA_VALUE,
+        return [ 
+          statesBits[BIT_NO_DATA_PRM1] === STATES_HAS_DATA_VALUE,
           statesBits[BIT_NO_DATA_PRM2] === STATES_HAS_DATA_VALUE,
           statesBits[BIT_NO_DATA_PRM3] === STATES_HAS_DATA_VALUE
         ];
@@ -98,31 +84,17 @@ var app = new Vue({
   },
   mounted() {
     this.$nextTick(function () {
-      this.isConnected = true;
+      this.connect();
     });
   },
   methods: {
     swupdate(){ 
-        let url=window.location.href;        
-        let arr=url.split("/");        
-        let address=arr[2].split(":");        
-        window.location.href=arr[0]+"//"+address[0]+":8080"      
-    },
-    warning() {
-      let self = this;
-      this.$buefy.snackbar.open({
-          message: self.stateMessage,
-          type: 'is-warning',
-          position: 'is-top',
-          actionText: 'OK',
-          indefinite: true,
-          onAction: function() {
-            self.connect();
-          }
-      })
+        let url = window.location.href;        
+        let arr = url.split("/");        
+        let address = arr[2].split(":");        
+        window.location.href = arr[0] + "//" + address[0] + ":8080"      
     },
     sendCmdToBov(method) { //with no response like notification, so id is null
-
       let jsoncmd = {
         jsonrpc: "2.0",
         method: method,
@@ -162,14 +134,15 @@ var app = new Vue({
       console.log('NOTIFICATION: ' + JSON.stringify(msg));
     },
     connect() {
-
-      if (this.ws) {
-        console.log("Connection has been established before");
+      if(this.ws)
+      {
+        console.log("Connection to WebSocket Server was established before.");
         return;
       }
-      this.isLoading=true;
+
       console.log("Starting connection to WebSocket Server");
-      this.isDisabled = true;
+
+      this.isLoading=true;      
       this.pending = {};
       this.ws = new WebSocket(this.endpoint);
 
@@ -181,13 +154,10 @@ var app = new Vue({
       //]);
 
       if (!this.ws) {
-        console.log("Cannot to connect");
-        this.isConnected = false;
+        console.log("Cannot connect to server, ws = " + this.ws);
         return;
       }
 
-      this.typeMsg = "is-warning";
-      this.stateMessage = "Идет подключение к серверу через вебсокет...";
       this.ws.onmessage = this.onmessagews;
       this.ws.onopen = this.onopenws;
       this.ws.onclose = this.onclosews;
@@ -207,45 +177,25 @@ var app = new Vue({
     },
     onopenws(event) {
       console.log("Connection is established!")
-      this.hasError = false;
-      this.stateMessage = "Подключение установлено!";
-      this.typeMsg = "is-success";
-      this.isDisabled = false;
-      this.timerId = setInterval(this.sendRequest, 500, 1, 'get')  
+      
       this.isLoading=false;
+      this.timerRequestId = setInterval(this.sendRequest, 500, 1, 'get');
+   
     },
     onerrorws(event) {
-      if(this.timerId){
-        clearInterval(this.timerId);
-      }
-      this.timerId = null;
-      this.stateMessage = "Невозможно подключиться к серверу " + event.target.url;
-      this.typeMsg = "is-danger";
-      this.isDisabled = false;
-      this.hasError = true;
-      console.log("Can’t establish a connection to the server at " + event.target.url + "!");
-      this.isLoading=false;
-      this.state = {};
-      this.warning();
-
+      console.log("Can’t establish a connection to the server at " + event.target.url + "!"); 
     },
     onclosews(event) {
-
       console.log("The connection between the client and the server is closed");
-      if(this.timerId){
-        clearInterval(this.timerId);
+
+      if(this.timerRequestId){
+        clearInterval(this.timerRequestId);
+        this.timerRequestId = null;
       }
-      this.timerId = null;
-      this.isDisabled = false;
-      this.isConnected = false;
+      this.state = {};
+      this.isLoading=true;
       this.ws = null;
-      if (!this.hasError) {
-        this.stateMessage = "Соединение с сервером прервано, повторное подключение";
-        this.typeMsg = "";
-        this.hasError = false;
-        this.isLoading=true;
-        this.warning();
-      }
+      this.connect();
     },
     onmessagews(msg) {
       const frame = JSON.parse(msg.data);

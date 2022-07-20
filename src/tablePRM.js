@@ -81,7 +81,7 @@ Vue.component('table-prm', {
                 </span>
                 <b-skeleton :active="props.row.err_parity < 0" :animated="true"></b-skeleton>
             </b-table-column>
-            <b-table-column field="len" label="Длина" numeric centered v-slot="props">
+            <b-table-column field="len" label="Длительность, в мкс." numeric centered v-slot="props">
                 <span :class="[
                     'tag', 'is-success', 'is-light', 'is-medium',
                     {'is-hidden': props.row.err_parity < 0}
