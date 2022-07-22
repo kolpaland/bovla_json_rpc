@@ -1,4 +1,4 @@
-Vue.component('table-bov', {
+export default Vue.component('table-bov', {
     data: function () {
         return {
             

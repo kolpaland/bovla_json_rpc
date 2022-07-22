@@ -1,4 +1,4 @@
-Vue.component('table-prm', {
+export default Vue.component('table-prm', {
     data: function () {
         return { 
             

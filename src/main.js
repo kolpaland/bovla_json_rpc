@@ -1,5 +1,18 @@
 // JSON-RPC over Websocket implementation
-var JSONRPC_TIMEOUT_MS = 1000;
+
+import tablePRM from './tablePRM.js'
+import tableBOV from './tableBOV.js'
+
+
+export default {
+  components: {
+    tablePRM,
+    tableBOV
+  }
+}
+
+
+const JSONRPC_TIMEOUT_MS = 1000;
 const STATES_HAS_DATA_VALUE = "0";
 const BIT_NO_DATA_PRD1 = 7; 
 const BIT_NO_DATA_PRD2 = 6;
@@ -10,11 +23,12 @@ const BIT_NO_DATA_GH = 2;
 const BIT_NO_DATA_NRZ = 1;
 const BIT_NO_DATA_UPR_PRM = 0;
 
+
 var app = new Vue({
   el: '#app',
   data: {
     ws: null,
-    endpoint: 'ws://bovla/websocket.lua',
+    endpoint: '',
     timerRequestId: null,
     pending: {},
     state: {},
@@ -83,16 +97,24 @@ var app = new Vue({
     },
   },
   mounted() {
-    this.$nextTick(function () {
+   this.$nextTick(function () {
+      this.endpoint = this.getEndpoint();
       this.connect();
-    });
+   });
   },
   methods: {
+    getURL(){
+      let url = window.location.href;        
+      let arr = url.split("/");        
+      let address = arr[2].split(":");
+      return { protocol: arr[0], address : address};
+    },
+    getEndpoint(){      
+      return `ws://${this.getURL().address[0]}/websocket.lua`;
+    },
     swupdate(){ 
-        let url = window.location.href;        
-        let arr = url.split("/");        
-        let address = arr[2].split(":");        
-        window.location.href = arr[0] + "//" + address[0] + ":8080"      
+        let url = this.getURL();    
+        window.location.href = url.protocol + "//" + url.address[0] + ":8080"      
     },
     sendCmdToBov(method) { //with no response like notification, so id is null
       let jsoncmd = {
